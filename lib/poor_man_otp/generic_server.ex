@@ -3,13 +3,13 @@ defmodule PoorManOtp.GenericServer do
   A Generic implementation for process as Servers
   """
 
-  @callback handle_message(msg :: tuple(), state :: any()) :: any()
+  @callback handle_message(msg :: tuple(), parent :: pid(), state :: any()) :: any()
 
   @doc """
   Creates a process with a server behavior
   """
-  def start(module) do
-    spawn(__MODULE__, :loop, [module, %{}])
+  def start(module, parent, init \\ []) do
+    spawn(__MODULE__, :loop, [module, parent, init])
   end
 
   @doc """
@@ -27,18 +27,15 @@ defmodule PoorManOtp.GenericServer do
   @doc """
   The main function of the process
   """
-  def loop(module, state) do
+  def loop(module, parent, state) do
     receive do
-      {message, pid} ->
-        {:ok, result, new_state} = module.handle_message(message, state)
-        send(pid, {:ok, {module, message, result, new_state}})
-        loop(module, new_state)
-
       :kill ->
         :killed
 
-      _ ->
-        loop(module, state)
+      message ->
+        {:ok, result, new_state} = module.handle_message(message, parent, state)
+        send(parent, {:ok, {module, message, result, new_state}})
+        loop(module, parent, new_state)
     end
   end
 end
