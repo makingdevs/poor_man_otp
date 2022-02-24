@@ -10,7 +10,8 @@ defmodule PoorManOtp.GenericServer do
   Creates a process with a server behavior
   """
   def start(module, parent, init \\ []) do
-    spawn(__MODULE__, :loop, [module, parent, init])
+    Process.flag(:trap_exit, true)
+    spawn_link(__MODULE__, :loop, [module, parent, init])
   end
 
   @doc """
