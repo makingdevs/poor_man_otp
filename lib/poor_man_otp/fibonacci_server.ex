@@ -17,6 +17,9 @@ defmodule PoorMan.FibonacciServer do
       {n, pid} ->
         send(pid, {:ok, Fibonacci.sequence(n)})
         loop()
+
+      _ ->
+        loop()
     end
   end
 end
