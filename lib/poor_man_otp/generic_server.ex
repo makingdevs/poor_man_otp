@@ -4,7 +4,7 @@ defmodule PoorManOtp.GenericServer do
   """
 
   @callback handle_cast(msg :: tuple(), state :: any()) :: {:noreply, any()}
-  @callback handle_call(msg :: tuple(), parent :: pid(), state :: any()) :: any()
+  @callback handle_call(msg :: tuple(), parent :: pid(), state :: any()) :: {:reply, any(), any()}
 
   @doc """
   Creates a process with a server behavior
@@ -44,8 +44,8 @@ defmodule PoorManOtp.GenericServer do
         loop(module, parent, new_state)
 
       {:call, responds_to, message} ->
-        {:ok, result, new_state} = module.handle_call(message, parent, state)
-        send(responds_to, {:ok, {module, message, result, new_state}})
+        {:reply, result, new_state} = module.handle_call(message, parent, state)
+        send(responds_to, result)
         loop(module, parent, new_state)
     end
   end
