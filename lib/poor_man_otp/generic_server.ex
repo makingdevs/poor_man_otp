@@ -5,13 +5,16 @@ defmodule PoorManOtp.GenericServer do
 
   @callback handle_cast(msg :: tuple(), state :: any()) :: {:noreply, any()}
   @callback handle_call(msg :: tuple(), parent :: pid(), state :: any()) :: {:reply, any(), any()}
+  @callback handle_info(msg :: tuple(), state :: any()) :: {:noreply, any()}
 
   @doc """
   Creates a process with a server behavior
   """
   def start(module, parent, init \\ []) do
-    Process.flag(:trap_exit, true)
-    spawn_link(__MODULE__, :loop, [module, parent, init])
+    # Process.flag(:trap_exit, true)
+    # spawn_link(__MODULE__, :loop, [module, parent, init])
+    {pid, _reference} = spawn_monitor(__MODULE__, :loop, [module, parent, init])
+    pid
   end
 
   @doc """
@@ -37,9 +40,6 @@ defmodule PoorManOtp.GenericServer do
   """
   def loop(module, parent, state) do
     receive do
-      :kill ->
-        :killed
-
       {:cast, message} ->
         {:noreply, new_state} = module.handle_cast(message, state)
         loop(module, parent, new_state)
@@ -47,6 +47,10 @@ defmodule PoorManOtp.GenericServer do
       {:call, message} ->
         {:reply, result, new_state} = module.handle_call(message, parent, state)
         send(parent, result)
+        loop(module, parent, new_state)
+
+      message ->
+        {:noreply, new_state} = module.handle_info(message, state)
         loop(module, parent, new_state)
     end
   end
