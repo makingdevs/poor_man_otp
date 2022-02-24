@@ -14,6 +14,10 @@ defmodule PoorMan.FibonacciServer do
 
   def loop(state) do
     receive do
+      {:values, pid} ->
+        send(pid, {:ok, state})
+        loop(state)
+
       {n, pid} ->
         result =
           case Map.get(state, n) do
