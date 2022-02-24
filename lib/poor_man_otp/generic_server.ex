@@ -13,6 +13,18 @@ defmodule PoorManOtp.GenericServer do
   end
 
   @doc """
+  Make async calls to the process
+  """
+  def cast(pid_server, message) do
+  end
+
+  @doc """
+  Make sync calls to the process
+  """
+  def call(pid_server, message) do
+  end
+
+  @doc """
   The main function of the process
   """
   def loop(module, state) do
