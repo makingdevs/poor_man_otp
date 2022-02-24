@@ -22,4 +22,15 @@ defmodule PoorMan.FibonacciServer do
     new_state = Map.put_new(state, n, result)
     {:ok, result, new_state}
   end
+
+  def handle_call({:compute, n}, _parent, state) do
+    result =
+      case Map.get(state, n) do
+        nil -> Fibonacci.sequence(n)
+        result -> result
+      end
+
+    new_state = Map.put_new(state, n, result)
+    {:ok, result, new_state}
+  end
 end

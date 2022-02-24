@@ -4,6 +4,7 @@ defmodule PoorManOtp.GenericServer do
   """
 
   @callback handle_cast(msg :: tuple(), parent :: pid(), state :: any()) :: any()
+  @callback handle_call(msg :: tuple(), parent :: pid(), state :: any()) :: any()
 
   @doc """
   Creates a process with a server behavior
@@ -23,6 +24,11 @@ defmodule PoorManOtp.GenericServer do
   Make sync calls to the process
   """
   def call(pid_server, message) do
+    send(pid_server, {:call, self(), message})
+
+    receive do
+      msg -> msg
+    end
   end
 
   @doc """
@@ -36,6 +42,11 @@ defmodule PoorManOtp.GenericServer do
       {:cast, message} ->
         {:ok, result, new_state} = module.handle_cast(message, parent, state)
         send(parent, {:ok, {module, message, result, new_state}})
+        loop(module, parent, new_state)
+
+      {:call, responds_to, message} ->
+        {:ok, result, new_state} = module.handle_call(message, parent, state)
+        send(responds_to, {:ok, {module, message, result, new_state}})
         loop(module, parent, new_state)
     end
   end
