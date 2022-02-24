@@ -3,10 +3,18 @@ defmodule PoorMan.FibonacciServer do
   Make the Fibonacci Sequence a Server
   """
 
+  alias PoorMan.Fibonacci
+
   @doc """
   Creates a process with the Fibonacci module inside
   """
-  def start(n) do
-    spawn(PoorMan.Fibonacci, :sequence, [n])
+  def start() do
+    spawn(__MODULE__, :loop, [])
+  end
+
+  def loop() do
+    receive do
+      n -> Fibonacci.sequence(n)
+    end
   end
 end
