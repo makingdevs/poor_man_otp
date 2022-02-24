@@ -33,4 +33,9 @@ defmodule PoorMan.FibonacciServer do
     new_state = Map.put_new(state, n, result)
     {:reply, result, new_state}
   end
+
+  def handle_info(message, state) do
+    IO.inspect(binding())
+    {:noreply, state}
+  end
 end
