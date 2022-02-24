@@ -12,7 +12,7 @@ defmodule PoorMan.FibonacciServer do
     GenericServer.start(__MODULE__, self(), %{})
   end
 
-  def handle_cast({:compute, n}, _parent, state) do
+  def handle_cast({:compute, n}, state) do
     result =
       case Map.get(state, n) do
         nil -> Fibonacci.sequence(n)
@@ -20,7 +20,7 @@ defmodule PoorMan.FibonacciServer do
       end
 
     new_state = Map.put_new(state, n, result)
-    {:ok, result, new_state}
+    {:noreply, new_state}
   end
 
   def handle_call({:compute, n}, _parent, state) do
