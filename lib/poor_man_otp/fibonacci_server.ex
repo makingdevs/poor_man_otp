@@ -13,7 +13,13 @@ defmodule PoorMan.FibonacciServer do
   end
 
   def handle_message({:compute, n}, state) do
-    result = Fibonacci.sequence(n)
-    {:ok, result, state}
+    result =
+      case Map.get(state, n) do
+        nil -> Fibonacci.sequence(n)
+        result -> result
+      end
+
+    new_state = Map.put_new(state, n, result)
+    {:ok, result, new_state}
   end
 end
