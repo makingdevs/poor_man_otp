@@ -3,7 +3,7 @@ defmodule PoorManOtp.GenericServer do
   A Generic implementation for process as Servers
   """
 
-  @callback handle_cast(msg :: tuple(), parent :: pid(), state :: any()) :: any()
+  @callback handle_cast(msg :: tuple(), state :: any()) :: {:noreply, any()}
   @callback handle_call(msg :: tuple(), parent :: pid(), state :: any()) :: any()
 
   @doc """
@@ -40,8 +40,7 @@ defmodule PoorManOtp.GenericServer do
         :killed
 
       {:cast, message} ->
-        {:ok, result, new_state} = module.handle_cast(message, parent, state)
-        send(parent, {:ok, {module, message, result, new_state}})
+        {:noreply, new_state} = module.handle_cast(message, state)
         loop(module, parent, new_state)
 
       {:call, responds_to, message} ->
