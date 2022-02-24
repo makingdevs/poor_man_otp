@@ -31,6 +31,6 @@ defmodule PoorMan.FibonacciServer do
       end
 
     new_state = Map.put_new(state, n, result)
-    {:ok, result, new_state}
+    {:reply, result, new_state}
   end
 end
