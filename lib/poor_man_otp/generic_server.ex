@@ -24,7 +24,7 @@ defmodule PoorManOtp.GenericServer do
   Make sync calls to the process
   """
   def call(pid_server, message) do
-    send(pid_server, {:call, self(), message})
+    send(pid_server, {:call, message})
 
     receive do
       msg -> msg
@@ -43,9 +43,9 @@ defmodule PoorManOtp.GenericServer do
         {:noreply, new_state} = module.handle_cast(message, state)
         loop(module, parent, new_state)
 
-      {:call, responds_to, message} ->
+      {:call, message} ->
         {:reply, result, new_state} = module.handle_call(message, parent, state)
-        send(responds_to, result)
+        send(parent, result)
         loop(module, parent, new_state)
     end
   end
