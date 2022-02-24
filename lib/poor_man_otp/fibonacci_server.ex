@@ -15,8 +15,12 @@ defmodule PoorMan.FibonacciServer do
   def loop(state) do
     receive do
       {n, pid} ->
-        send(pid, {:ok, Fibonacci.sequence(n)})
-        loop(state)
+        result = Fibonacci.sequence(n)
+        send(pid, {:ok, result})
+
+        state
+        |> Map.put(n, result)
+        |> loop()
 
       :kill ->
         :killed
