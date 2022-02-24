@@ -16,6 +16,7 @@ defmodule PoorManOtp.GenericServer do
   Make async calls to the process
   """
   def cast(pid_server, message) do
+    send(pid_server, {:cast, message})
   end
 
   @doc """
