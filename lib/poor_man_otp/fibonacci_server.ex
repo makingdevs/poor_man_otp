@@ -9,20 +9,20 @@ defmodule PoorMan.FibonacciServer do
   Creates a process with the Fibonacci module inside
   """
   def start() do
-    spawn(__MODULE__, :loop, [])
+    spawn(__MODULE__, :loop, [%{}])
   end
 
-  def loop() do
+  def loop(state) do
     receive do
       {n, pid} ->
         send(pid, {:ok, Fibonacci.sequence(n)})
-        loop()
+        loop(state)
 
       :kill ->
         :killed
 
       _ ->
-        loop()
+        loop(state)
     end
   end
 end
