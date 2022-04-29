@@ -6,6 +6,6 @@ defmodule PoorMan.AOC2015.Day3Server do
   alias PoorManOtp.GenericServer
 
   def start() do
-    GenericServer.start(__MODULE__)
+    GenericServer.start(__MODULE__, self())
   end
 end
