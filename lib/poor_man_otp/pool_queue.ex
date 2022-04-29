@@ -20,4 +20,7 @@ defmodule PoorManOtp.PoolQueue do
   end
 
   def handle_call(:get, _from, %{queue: queue} = state), do: {:reply, {:ok, queue}, state}
+
+  def handle_call(:get_pid, _from, %{queue: [%{pid: pid} = pid_ref | queue], worker: worker}),
+    do: {:reply, {:ok, pid}, %{queue: queue ++ [pid_ref], worker: worker}}
 end
