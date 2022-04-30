@@ -15,7 +15,10 @@ defmodule PoorManOtp.PoolQueue do
     GenServer.call(pid, {:compute, n})
   end
 
+  @impl true
   def init([{mod, fun, args}, n]) do
+    Process.flag(:trap_exit, true)
+
     queue =
       1..n
       |> Enum.to_list()
@@ -27,8 +30,12 @@ defmodule PoorManOtp.PoolQueue do
     {:ok, %{queue: queue, worker: {mod, fun, args}}}
   end
 
+  @impl true
   def handle_call(:get, _from, %{queue: queue} = state), do: {:reply, {:ok, queue}, state}
 
   def handle_call(:get_pid, _from, %{queue: [%{pid: pid} = pid_ref | queue], worker: worker}),
     do: {:reply, {:ok, pid}, %{queue: queue ++ [pid_ref], worker: worker}}
+
+  @impl true
+  def handle_info({:EXIT, _pid, _reason}, state), do: {:noreply, state}
 end
