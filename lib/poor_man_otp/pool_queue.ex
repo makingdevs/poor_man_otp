@@ -24,7 +24,8 @@ defmodule PoorManOtp.PoolQueue do
       |> Enum.to_list()
       |> Enum.map(fn _n ->
         {:ok, pid} = :erlang.apply(mod, fun, [args])
-        %{pid: pid}
+        ref = Process.monitor(pid)
+        %{pid: pid, ref: ref}
       end)
 
     {:ok, %{queue: queue, worker: {mod, fun, args}}}
